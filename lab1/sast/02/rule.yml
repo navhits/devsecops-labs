@@ -1,0 +1,35 @@
+rules:
+  - id: dangerous-system-call
+    patterns:
+      - pattern-not: os.$W("...", ...)
+      - pattern-either:
+          - pattern: os.system(...)
+          - pattern: getattr(os, "system")(...)
+          - pattern: __import__("os").system(...)
+          - pattern: getattr(__import__("os"), "system")(...)
+          - pattern: |
+              $X = __import__("os")
+              ...
+              $X.system(...)
+          - pattern: |
+              $X = __import__("os")
+              ...
+              getattr($X, "system")(...)
+          - pattern: |
+              $X = getattr(os, "system")
+              ...
+              $X(...)
+          - pattern: |
+              $X = __import__("os")
+              ...
+              $Y = getattr($X, "system")
+              ...
+              $Y(...)
+          - pattern: os.popen(...)
+          - pattern: os.popen2(...)
+          - pattern: os.popen3(...)
+          - pattern: os.popen4(...)
+    message: "Avoid passing user inputs to dangerous system calls like os.system, os.popen, or os.popen2."
+    severity: ERROR
+    languages:
+      - python
