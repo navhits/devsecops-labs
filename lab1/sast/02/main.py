@@ -12,4 +12,6 @@ def route_param():
 
 @app.route("/route_param/<route_param>")
 def route_param(route_param):
+    print("Hi")
+    print("Hi")
     return os.system("cat" + route_param)
